@@ -47,14 +47,15 @@ export const cartSlice = createSlice({
       localStorage.setItem('cartItems', JSON.stringify(state.cart));
     },
     deleteToCart: (state, action) => {
-      const nextCartItems = state.cart.filter((item) => item._id !== action.payload._id);
+      const nextCartItems = state.cart.filter(
+        (item) => !(item._id === action.payload._id && item.colors._id === action.payload.colors._id)
+      );
+
       state.cart = nextCartItems;
       localStorage.setItem('cartItems', JSON.stringify(state.cart));
     },
     decreaseCart: (state, action) => {
-      const itemIndex = state.cart.findIndex(
-        (item) => item.product_id === action.payload._id && item.colors._id === action.payload.colors._id
-      );
+      const itemIndex = state.cart.findIndex((item) => item._id === action.payload._id && item.colors._id === action.payload.colors._id);
       if (state.cart[itemIndex].cartQuantity > 1) {
         state.cart[itemIndex].cartQuantity -= 1;
       } else if (state.cart[itemIndex].cartQuantity === 1) {
@@ -63,9 +64,8 @@ export const cartSlice = createSlice({
       localStorage.setItem('cartItems', JSON.stringify(state.cart));
     },
     increaseCart: (state, action) => {
-      const itemIndex = state.cart.findIndex(
-        (item) => item.product_id === action.payload._id && item.colors._id === action.payload.colors._id
-      );
+      const itemIndex = state.cart.findIndex((item) => item._id === action.payload._id && item.colors._id === action.payload.colors._id);
+      console.log(itemIndex);
       if (state.cart[itemIndex].cartQuantity >= 1) {
         state.cart[itemIndex].cartQuantity += 1;
       }
@@ -73,9 +73,6 @@ export const cartSlice = createSlice({
     },
     clearCart: (state) => {
       state.cart = [];
-      toast.error(`Đã xóa tất cả trong giỏ hàng`, {
-        position: 'bottom-left'
-      });
       localStorage.setItem('cartItems', JSON.stringify(state.cart));
     },
     getTotals: (state) => {
