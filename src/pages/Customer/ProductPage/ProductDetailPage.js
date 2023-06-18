@@ -19,8 +19,9 @@ import * as cartActions from '../Cart/_redux/cartAction';
 const ProductDetailPage = () => {
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
-  const { productState } = useSelector((state) => ({ productState: state.products }), shallowEqual);
+  const { productState, cartState } = useSelector((state) => ({ productState: state.products, cartState: state.carts }), shallowEqual);
   const { productDetail } = productState;
+  const { cart, cartQuantity } = cartState;
   const [quantity, setQuantity] = useState(1);
   const [idSelectedColor, setIdSelectedColor] = useState(null);
   const [colorChoosen, setColorChoosen] = useState(null);
@@ -63,6 +64,9 @@ const ProductDetailPage = () => {
       });
     }
   };
+  useEffect(() => {
+    dispatch(cartActions.getTotal());
+  }, [dispatch, cart, cartQuantity]);
   return (
     <CustomerPage>
       <div className="bg-[#ed1c24] relative opacity-80">

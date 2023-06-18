@@ -1,34 +1,42 @@
-import React, { useState } from 'react';
 import CustomerPage from 'layout/CustomerLayout/CustomerPage';
+import { useEffect, useState } from 'react';
+import { HiChevronRight } from 'react-icons/hi';
 import { Link, NavLink } from 'react-router-dom';
 import { convertToVND } from 'utils/convertPrice';
-// import * as cartActions from '../Cart/_redux/cartAction';
-import { HiChevronRight } from 'react-icons/hi';
+import * as cartActions from '../Cart/_redux/cartAction';
+import { Button } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { shallowEqual, useSelector } from 'react-redux';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 const CartListPage = () => {
-  //   const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const { cartState } = useSelector((state) => ({ cartState: state.carts }), shallowEqual);
 
-  console.log(cartState);
-  const { cart: listCart } = cartState;
-  const { enqueueSnackbar } = useSnackbar();
-  //   useEffect(() => {
-  //     dispatch(cartActions.addToCart());
-  //   }, []);
+  const { cart: listCart, cartTotalQuantity, cartTotalAmount } = cartState;
   const [quantity, setQuantity] = useState(1);
-  const handleDecrease = () => {
-    if (quantity <= 1) {
-      enqueueSnackbar('Số lượng sản phẩm phải lớn hơn 1', {
-        variant: 'warning'
-      });
-    } else {
-      setQuantity(quantity - 1);
-    }
+  const { enqueueSnackbar } = useSnackbar();
+  const handleDeleToCart = (item) => {
+    dispatch(cartActions.deleteToCart(item));
+    enqueueSnackbar(`${item.name} đã được xóa khỏi giỏ hàng`, {
+      variant: 'success'
+    });
   };
-  const handleIncrease = () => {
-    setQuantity(quantity + 1);
+  const handleIncrease = (item) => {
+    setQuantity(item.cartQuantity);
+    dispatch(cartActions.increaseCart(item));
   };
+  const handleDecrement = (item) => {
+    setQuantity(item.cartQuantity);
+    dispatch(cartActions.decreaseCart(item));
+  };
+  const handleDeleAllCart = () => {
+    dispatch(cartActions.clearCart());
+    enqueueSnackbar(`Tất cả sản phẩm đã được xóa khỏi giỏ hàng`, {
+      variant: 'success'
+    });
+  };
+  useEffect(() => {
+    dispatch(cartActions.getTotal());
+  }, [dispatch, listCart, quantity]);
   return (
     <CustomerPage>
       <div className="relative-bg-[#fff]">
@@ -77,7 +85,10 @@ const CartListPage = () => {
                         {listCart?.map((item) => (
                           <tr key={item._id}>
                             <td className="py-4 w-5 p-0 border-b-[1px] text-sm text-left">
-                              <button className="block leading-5 w-6 h-6 text-base rounded-[100%] hover:text-[#111] text-[#ccc] font-bold text-center border-2 border-solid border-current ">
+                              <button
+                                onClick={() => handleDeleToCart(item)}
+                                className="block leading-5 w-6 h-6 text-base rounded-[100%] hover:text-[#111] text-[#ccc] font-bold text-center border-2 border-solid border-current"
+                              >
                                 ×
                               </button>
                             </td>
@@ -97,18 +108,18 @@ const CartListPage = () => {
                             <td className="py-4 p-2 border-b-[1px] ">
                               <div className="m-0 inline-flex">
                                 <input
-                                  onClick={handleDecrease}
+                                  onClick={() => handleDecrement(item)}
                                   type="button"
                                   value="-"
                                   className="border-r-0 px-2 m-0 inline-block bg-transparent overflow-hidden relative text-[#666] border font-normal button hover:bg-slate-100"
                                 />
                                 <input
-                                  value={item.cartQuantity}
+                                  value={item?.cartQuantity}
                                   inputMode="numeric"
                                   className="border h-[2.507em]  border-x-0 max-w-[2em] text-center text-sm bg-transparent px-0 m-0 inline-block"
                                 />
                                 <input
-                                  onClick={handleIncrease}
+                                  onClick={() => handleIncrease(item)}
                                   type="button"
                                   value="+"
                                   className="border-l-0 px-2 m-0 inline-block bg-transparent overflow-hidden relative text-[#666] border font-normal button hover:bg-slate-100"
@@ -116,20 +127,36 @@ const CartListPage = () => {
                               </div>
                             </td>
                             <td className="py-4 p-2 border-b-[1px] text-sm text-right">
-                              <span className="font-bold text-[#ED1C24] p-2">2.860.000đ</span>
+                              <span className="font-bold text-[#ED1C24] p-2">
+                                {item.price_discount
+                                  ? (item.price_discount * item.cartQuantity).toLocaleString('vi', {
+                                      style: 'currency',
+                                      currency: 'VND'
+                                    })
+                                  : (item.price * item.cartQuantity).toLocaleString('vi', {
+                                      style: 'currency',
+                                      currency: 'VND'
+                                    })}
+                              </span>
                             </td>
                           </tr>
                         ))}
 
                         <tr>
                           <td colSpan="6" className="text-right border-0 px-0 pt-[15px] pb-[10px] text-sm ">
-                            <div className="float-left text-left ml-0">
+                            <div className="flex items-center justify-between">
                               <NavLink
                                 to="/products"
-                                className="text-[#ed1c24] border-2 text-xs border-solid  border-current bg-transparent leading-[2.19em] mb-4  button border-cart uppercase"
+                                className="text-[#ed1c24] border-2 text-xs border-solid  border-current bg-transparent leading-[2.19em] button border-cart uppercase"
                               >
                                 ← Tiếp tục xem sản phẩm{' '}
                               </NavLink>
+                              <Button
+                                className="text-[#ed1c24] border-2 text-xs border-solid  border-current bg-transparent leading-[2.19em] button border-cart uppercase"
+                                onClick={handleDeleAllCart}
+                              >
+                                Xóa tất cả sản phẩm
+                              </Button>
                             </div>
                           </td>
                         </tr>
@@ -154,20 +181,25 @@ const CartListPage = () => {
                       <tr>
                         <th className="text-sm font-normal pl-0 p-2 text-left border-b-[1px]">Tạm tính</th>
                         <td className="text-right pr-0 text-sm border-b-[1px]">
-                          <span className="font-bold text-[#ED1C24] p-2">2.860.000đ</span>
+                          <span className="font-bold text-[#ED1C24] p-2">{cartTotalAmount ? convertToVND(cartTotalAmount) : 0}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <th className="text-sm font-normal pl-0 pr-2 py-5 text-left  border-b-[1px]">Tổng số lượng</th>
+                        <td className="text-right pr-0 text-sm border-b-[1px]">
+                          <span className="text-xs text-[#666]">{cartTotalQuantity}</span>
                         </td>
                       </tr>
                       <tr>
                         <th className="text-sm font-normal pl-0 pr-2 py-5 text-left  border-b-[1px]">Giao hàng</th>
                         <td className="text-right pr-0 text-sm border-b-[1px]">
-                          <span className="text-xs text-[#666]">Đồng giá : </span>
-                          <span className="font-bold text-[#ED1C24] p-2">30.000đ</span>
+                          <span className="text-xs text-[#666]">Miễn phí</span>
                         </td>
                       </tr>
                       <tr>
                         <th className="text-sm font-normal pl-0 p-2 text-left border-b-[1px]">Tổng</th>
                         <td className="text-right pr-0 text-sm border-b-[1px] total-price">
-                          <span className="font-bold text-[#ED1C24] p-2">2.860.000đ</span>
+                          <span className="font-bold text-[#ED1C24] p-2">{cartTotalAmount ? convertToVND(cartTotalAmount) : 0}</span>
                         </td>
                       </tr>
                     </tbody>
