@@ -86,6 +86,7 @@ const ProductCreateDialog = (props) => {
   const { data: listColor } = colorState;
   const [content, setContent] = useState('');
   const [files, setFiles] = useState([]);
+  const [open, setOpen] = useState(false);
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       'image/*': []
@@ -177,8 +178,8 @@ const ProductCreateDialog = (props) => {
         const transformData = {
           ...values,
           categoryId: values.categoryId.id,
-          discription: content,
-          imageToDeletePublicId: props.data?.imagePublicId
+          discription: content
+          // imageToDeletePublicId: props.data?.imagePublicId
         };
         formData.append('image', files?.[0]);
         formData.append('data', JSON.stringify(transformData));
@@ -249,10 +250,28 @@ const ProductCreateDialog = (props) => {
                 <Typography mb={1}>Tên sản phẩm</Typography>
                 <RHFTextField name="name" />
               </FormControl>
-              <FormControl width="30">
-                <Typography mb={1}>Số lượng</Typography>
-                <RHFTextField name="soLuongSanPham" />
-              </FormControl>
+              <Stack direction="row">
+                <FormControl width="30">
+                  <Typography mb={1}>Số lượng</Typography>
+                  <RHFTextField name="soLuongSanPham" disabled={props.isEdit} />
+                </FormControl>
+                {props.isEdit && !open && (
+                  <Button className="w-[200px] h-8 mt-9 ml-1" size="small" variant="text" color="primary" onClick={() => setOpen(true)}>
+                    Thêm số lượng
+                  </Button>
+                )}
+              </Stack>
+              {open && (
+                <Stack direction="row">
+                  <FormControl width="30">
+                    <Typography mb={1}>Thêm số lượng</Typography>
+                    <RHFTextField name="soLuongThem" />
+                  </FormControl>
+                  <Button variant="text" className="w-[250px] h-8 mt-9 ml-1" size="small" color="error" onClick={() => setOpen(false)}>
+                    Xóa thêm số lượng
+                  </Button>
+                </Stack>
+              )}
             </Stack>
             <Stack direction="row" spacing={2} mb={4}>
               <FormControl fullWidth>

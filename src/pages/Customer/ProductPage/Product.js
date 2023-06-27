@@ -48,9 +48,11 @@ const Product = (props) => {
                     </div>
                     <div className="mx-auto p-2 ">
                       <span className="leading-4 block">
-                        <del aria-hidden="true">
-                          <span className="opacity-60 font-normal mr-1 text-[#ED1C24] text-xs">{convertToVND(item.price)} </span>
-                        </del>
+                        {item.discount > 0 && (
+                          <del aria-hidden="true">
+                            <span className="opacity-60 font-normal mr-1 text-[#ED1C24] text-xs">{convertToVND(item.price)} </span>
+                          </del>
+                        )}
                         <span className="font-bold text-[#ED1C24] text-xs p-2">{convertToVND(item.price_discount)} </span>
                       </span>
                     </div>

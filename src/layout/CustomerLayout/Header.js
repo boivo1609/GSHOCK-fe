@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { FaShoppingCart } from 'react-icons/fa';
 import { AiFillSetting } from 'react-icons/ai';
@@ -10,9 +10,10 @@ import Search from 'components/search/Search';
 import { useDispatch } from 'react-redux';
 import { actions } from '../../pages/authentication/_redux/authRedux';
 import { useNavigate } from 'react-router-dom';
-
+import * as cartActions from '../../pages/Customer/Cart/_redux/cartAction';
 import { useSnackbar } from 'notistack';
-import { Box, Tooltip, IconButton, Avatar, Menu, MenuItem, Typography, Popover, Badge } from '@mui/material';
+
+import { Box, Tooltip, IconButton, Avatar, Menu, MenuItem, Typography, Popover, Badge, Button } from '@mui/material';
 const Header = () => {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -20,19 +21,28 @@ const Header = () => {
   const { enqueueSnackbar } = useSnackbar();
   const { currentState, cartsState } = useSelector((state) => ({ currentState: state.auth, cartsState: state.carts }), shallowEqual);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const { cart } = cartsState;
-  const [quantity, setQuantity] = React.useState(1);
-  const handleDecrease = () => {
-    if (quantity <= 1) {
-      enqueueSnackbar('Số lượng sản phẩm phải lớn hơn 1', {
-        variant: 'warning'
-      });
-    } else {
-      setQuantity(quantity - 1);
-    }
+  const { cart, cartTotalAmount } = cartsState;
+  const handleDeleToCart = (item) => {
+    dispatch(cartActions.deleteToCart(item));
+    enqueueSnackbar(`${item.name} đã được xóa khỏi giỏ hàng`, {
+      variant: 'success'
+    });
   };
-  const handleIncrease = () => {
-    setQuantity(quantity + 1);
+  const handleDeleAllCart = () => {
+    dispatch(cartActions.clearCart());
+    enqueueSnackbar(`Tất cả sản phẩm đã được xóa khỏi giỏ hàng`, {
+      variant: 'success'
+    });
+  };
+  const [quantity, setQuantity] = React.useState(1);
+
+  const handleIncrease = (item) => {
+    setQuantity(item.cartQuantity);
+    dispatch(cartActions.increaseCart(item));
+  };
+  const handleDecrement = (item) => {
+    setQuantity(item.cartQuantity);
+    dispatch(cartActions.decreaseCart(item));
   };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -41,6 +51,7 @@ const Header = () => {
     setAnchorElUser(null);
   };
   const handleLogout = async () => {
+    dispatch(cartActions.clearCart());
     dispatch(actions.logout());
     navigate('/logout');
   };
@@ -52,7 +63,9 @@ const Header = () => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
+  useEffect(() => {
+    dispatch(cartActions.getTotal());
+  }, [dispatch, cart, quantity]);
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
   return (
@@ -93,11 +106,11 @@ const Header = () => {
 
               <li className="headerr-divider"></li>
               <li className="cart mr-0 menu-item">
-                <div className="border border-red-800">
+                <div className="border border-red-800 border-style rounded-full border-cart">
                   <button
                     aria-describedby={id}
                     onClick={handleClick}
-                    className=" px-0 mx-0.5 text-red-600 text-xs border-none my-0 rounded-full items-center object-cover bg-transparent button flex border-cart "
+                    className=" px-0 mx-0.5 text-red-600 text-xs border-none my-0  items-center rounded-full object-cover bg-transparent button flex border-cart "
                   >
                     <span className="my-0 mx-2 ">GIỎ HÀNG</span>
                     <Badge badgeContent={cart?.length > 0 ? cart?.length : 0} color="error">
@@ -123,34 +136,37 @@ const Header = () => {
                         <table className="w-full px-2">
                           <thead>
                             <tr>
-                              <th colSpan="3" className=" pl-0 uppercase p-1  text-left  text-xs">
+                              <th colSpan="3" className=" pl-0 uppercase p-1 border-b-[1px] border-bot-style text-left  text-xs">
                                 sản phẩm
                               </th>
-                              <th className="  pl-0 uppercase p-1 text-left text-xs">số lượng</th>
-                              <th className=" pl-0 uppercase p-1 text-center text-xs">Giá</th>
+                              <th className=" border-b-[1px] border-bot-style pl-0 uppercase p-1 text-left text-xs">số lượng</th>
+                              <th className="border-b-[1px] border-bot-style pl-0 uppercase p-1 text-center text-xs">Giá</th>
                             </tr>
                           </thead>
                           <tbody>
                             {cart?.map((item) => (
                               <tr key={item._id}>
-                                <td className="py-1 w-5 p-0  text-xs text-left">
-                                  <button className="block leading-5 w-6 h-6 text-base rounded-[100%] hover:text-[#111] text-[#ccc] font-bold text-center border-2 border-solid border-current ">
+                                <td className="py-1 w-5 p-0 border-b-[1px] border-bot-style text-xs text-left">
+                                  <button
+                                    onClick={() => handleDeleToCart(item)}
+                                    className="block leading-5 w-6 h-6 text-base rounded-[100%] hover:text-[#111] text-[#ccc] font-bold text-center border-2 border-solid border-current "
+                                  >
                                     ×
                                   </button>
                                 </td>
-                                <td className="py-1 min-w-[60px] w-[90px] max-w-[90px] p-2  ">
+                                <td className="border-b-[1px] border-bot-style py-1 min-w-[60px] w-[90px] max-w-[90px] p-2  ">
                                   <div>
                                     <img src={item.image} alt="" className="h-[77px] w-[63px] inline-block align-middle max-w-full " />
                                   </div>
                                 </td>
-                                <td className="py-1 text-ellipsis p-2 border-b-[1px] text-xs text-[#666]">
+                                <td className="py-1  border-bot-style text-ellipsis p-2 border-b-[1px] text-xs text-[#666]">
                                   <p>{item.name}</p>
                                 </td>
 
-                                <td className="py-1 p-2  ">
+                                <td className="py-1 p-2 border-b-[1px] border-bot-style ">
                                   <div className="m-0 inline-flex">
                                     <input
-                                      onClick={handleDecrease}
+                                      onClick={() => handleDecrement(item)}
                                       type="button"
                                       value="-"
                                       className="border-r-0 px-2 m-0 inline-block bg-transparent overflow-hidden relative text-[#666] border font-normal button hover:bg-slate-100"
@@ -161,37 +177,60 @@ const Header = () => {
                                       className="border h-[2.507em]  border-x-0 max-w-[2em] text-center text-sm bg-transparent px-0 m-0 inline-block"
                                     />
                                     <input
-                                      onClick={handleIncrease}
+                                      onClick={() => handleIncrease(item)}
                                       type="button"
                                       value="+"
                                       className="border-l-0 px-2 m-0 inline-block bg-transparent overflow-hidden relative text-[#666] border font-normal button hover:bg-slate-100"
                                     />
                                   </div>
                                 </td>
-                                <td className="py-1 p-2 border-b-[1px] text-xs text-left">
+                                <td className="py-1 p-2 border-b-[1px]  border-bot-style text-xs text-left">
                                   <span className="font-bold text-[#ED1C24] p-2">
-                                    {item?.price_discount ? convertToVND(item?.price_discount) : 0}
+                                    {item.price_discount
+                                      ? (item.price_discount * item.cartQuantity).toLocaleString('vi', {
+                                          style: 'currency',
+                                          currency: 'VND'
+                                        })
+                                      : (item.price * item.cartQuantity).toLocaleString('vi', {
+                                          style: 'currency',
+                                          currency: 'VND'
+                                        })}
                                   </span>
                                 </td>
                               </tr>
                             ))}
-
                             <tr>
-                              <td colSpan="6" className="text-right border-0 px-0 pt-[5px]  text-xs ">
-                                <div className="float-right text-right ml-0">
+                              <td colSpan="6" className=" text-xs ">
+                                <div className="flex items-center mr-[0,85rem] float-right ">
+                                  <th className="text-xs font-normal  ">Tạm tính : </th>
+                                  <span className="font-bold text-[#ED1C24] p-2">
+                                    {cartTotalAmount ? convertToVND(cartTotalAmount) : 0}
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td colSpan="6" className="  pt-[5px]  text-xs ">
+                                <div className="flex items-center justify-between float-right">
                                   <NavLink
                                     to="/cart"
-                                    className="text-[#ed1c24] border-2 text-xs border-solid  border-current bg-transparent leading-[2.19em] mb-4  button border-cart uppercase"
+                                    className="text-[#ed1c24] border-2 text-xs border-solid  border-current bg-transparent leading-[2.19em]  button border-cart uppercase"
                                   >
                                     Đi đến giỏ hàng{' '}
                                   </NavLink>
+                                  <Button
+                                    className="text-[#ed1c24] border-2 text-xs border-solid  border-current bg-transparent leading-[2.19em] button border-cart uppercase"
+                                    onClick={handleDeleAllCart}
+                                  >
+                                    Xóa tất cả sản phẩm
+                                  </Button>
                                 </div>
                               </td>
                             </tr>
                           </tbody>
                         </table>
                       ) : (
-                        <div>
+                        <div className="flex flex-col items-center">
                           <Typography sx={{ p: 2, fontWeight: 'bold' }}>Chưa có sản phẩm trong giỏ hàng</Typography>
                           <img src="/2038854.png" alt="" className="w-16 h-16" />
                         </div>

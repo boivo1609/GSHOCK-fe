@@ -10,7 +10,7 @@ const icons = {
 
 const dashboard = {
   id: 'group-dashboard',
-  title: 'Navigation',
+
   type: 'group',
   children: [
     {
@@ -50,6 +50,14 @@ const dashboard = {
       title: 'Quản lý Banner',
       type: 'item',
       url: '/admin/banner',
+      icon: icons.DashboardOutlined,
+      breadcrumbs: true
+    },
+    {
+      id: 'order',
+      title: 'Quản lý Đơn Đặt Hàng',
+      type: 'item',
+      url: '/admin/order',
       icon: icons.DashboardOutlined,
       breadcrumbs: true
     }

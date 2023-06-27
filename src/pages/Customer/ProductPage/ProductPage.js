@@ -14,7 +14,7 @@ const LABELS_MAP_STATUS = {
   desc: 'Giá từ cao đến thấp'
 };
 function valuetext(value) {
-  return `${value}°C`;
+  return `${value}đ`;
 }
 
 const minDistance = 0;
@@ -183,6 +183,7 @@ const ProductPage = () => {
                     valueLabelDisplay="auto"
                     getAriaValueText={valuetext}
                     disableSwap
+                    color="error"
                   />
                 </Box>
                 <Typography sx={{ fontWeight: 'bold', marginBottom: '10px', marginTop: '10px' }}>LỌC THEO MÀU </Typography>

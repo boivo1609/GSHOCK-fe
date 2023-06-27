@@ -8,24 +8,30 @@ import { AiFillCaretRight } from 'react-icons/ai';
 import { Link, useParams } from 'react-router-dom';
 import { FaMapMarkerAlt, FaPhoneSquareAlt, FaTruck } from 'react-icons/fa';
 import { ImCart } from 'react-icons/im';
+import { useNavigate } from 'react-router-dom';
 import { GiSmartphone } from 'react-icons/gi';
 import ProductFeatured from 'layout/CustomerLayout/ProductFeatured';
-import FavoriteProduct from 'layout/CustomerLayout/ProductFavorite';
+
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import * as productActions from '../../Admin/SanPham/api/actionsProduct';
 import { convertToVND } from 'utils/convertPrice';
 import { useSnackbar } from 'notistack';
 import * as cartActions from '../Cart/_redux/cartAction';
 const ProductDetailPage = () => {
+  const { currentState } = useSelector((state) => ({ currentState: state.auth }), shallowEqual);
+  console.log(currentState);
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   const { productState, cartState } = useSelector((state) => ({ productState: state.products, cartState: state.carts }), shallowEqual);
-  const { productDetail } = productState;
+  const { productDetail, productCustomer: listProduct } = productState;
+  console.log(listProduct);
   const { cart, cartQuantity } = cartState;
+
   const [quantity, setQuantity] = useState(1);
   const [idSelectedColor, setIdSelectedColor] = useState(null);
   const [colorChoosen, setColorChoosen] = useState(null);
   const { id } = useParams();
+  const navigate = useNavigate();
   useEffect(() => {
     if (id) {
       dispatch(productActions.getDetailProduct(id));
@@ -48,25 +54,30 @@ const ProductDetailPage = () => {
     setIdSelectedColor(item._id);
   };
   const handleAddToCart = (values) => {
-    if (colorChoosen === null) {
-      enqueueSnackbar('Vui lòng chọn màu sắc khi thêm sản phẩm vào giỏ hàng', {
-        variant: 'error'
-      });
+    if (currentState.authToken == undefined) {
+      navigate('/login');
     } else {
-      const transformDataCart = {
-        ...values,
-        colors: colorChoosen,
-        cartQuantity: quantity
-      };
-      dispatch(cartActions.addToCart(transformDataCart));
-      enqueueSnackbar(`${values.name} đã được thêm vào giỏ hàng`, {
-        variant: 'success'
-      });
+      if (colorChoosen === null) {
+        enqueueSnackbar('Vui lòng chọn màu sắc khi thêm sản phẩm vào giỏ hàng', {
+          variant: 'error'
+        });
+      } else {
+        const transformDataCart = {
+          ...values,
+          colors: colorChoosen,
+          cartQuantity: quantity
+        };
+        dispatch(cartActions.addToCart(transformDataCart));
+        enqueueSnackbar(`${values.name} đã được thêm vào giỏ hàng`, {
+          variant: 'success'
+        });
+      }
     }
   };
   useEffect(() => {
     dispatch(cartActions.getTotal());
   }, [dispatch, cart, cartQuantity]);
+
   return (
     <CustomerPage>
       <div className="bg-[#ed1c24] relative opacity-80">
@@ -120,7 +131,7 @@ const ProductDetailPage = () => {
               </div>
               <div></div>
             </div>
-            <div className="pt-[10px] text-center pr-[30px] border-r flex-1 col">
+            <div className="pt-[10px] text-center pr-[30px]   border-r border-right-style flex-1 col">
               <h1 className="text-[#555] text-2xl font-bold w-full mt-0 mb-2 ">{productDetail?.name}</h1>
               <div className="mx-auto bg-[#000000] h-[3px] max-w-[30px] w-full my-4"></div>
               <div className="mx-auto">
@@ -138,7 +149,11 @@ const ProductDetailPage = () => {
                   </span>
                 </p>
               </div>
-              <p className="mb-4 font-bold text-sm mt-0 text-[#7a9c59]">Còn {productDetail?.so_luong} sản phẩm </p>
+              {productDetail?.soluong_conlai > 0 ? (
+                <p className="mb-4 font-bold text-sm mt-0 text-[#7a9c59]">Còn {productDetail?.soluong_conlai} sản phẩm </p>
+              ) : (
+                <p className="mb-4 font-bold text-sm mt-0 text-[#7a9c59]"> Sản phẩm hết hàng</p>
+              )}
               <div className="flex gap-x-2 items-center justify-center">
                 <p className=" ">Chọn màu sắc : </p>
                 {productDetail?.colors.map((iteml) => (
@@ -180,13 +195,6 @@ const ProductDetailPage = () => {
                   <div className="mr-1 mb-4">
                     <Button variant="contained" color="primary" onClick={() => handleAddToCart(productDetail)}>
                       Thêm vào giỏ
-                    </Button>
-                  </div>
-                  <div className="ml-1 mb-4 font-bold">
-                    <Button variant="contained" color="error">
-                      <Link to="/" className="font-bold">
-                        Mua hàng
-                      </Link>
                     </Button>
                   </div>
                 </div>
@@ -289,13 +297,6 @@ const ProductDetailPage = () => {
                 <div className="mt-2.5 h-[3px] bg-[#000000] block mx-0 mb-4 max-w-[40px] w-full"></div>
                 <ul className="m-0 p-0 ">
                   <ProductFeatured></ProductFeatured>
-                  <ProductFeatured></ProductFeatured>
-                  <ProductFeatured></ProductFeatured>
-                  <ProductFeatured></ProductFeatured>
-                  <ProductFeatured></ProductFeatured>
-                  <ProductFeatured></ProductFeatured>
-                  <ProductFeatured></ProductFeatured>
-                  <ProductFeatured></ProductFeatured>
                 </ul>
               </aside>
             </div>
@@ -303,101 +304,17 @@ const ProductDetailPage = () => {
         </div>
         <div className="product-footer">
           <div className="max-w-[1430px] px-4 mx-auto w-full ">
-            <div className="py-[30px] px-0 border-t-[1px] ">
+            <div className="py-[30px] px-0 border-t-[1px] border-top-style  ">
               <div className="w-full justify-start flex items-center m-0 p-0">
                 <div className="mb-[-1px] ml-0 ">
-                  <div className="border-t-[#ed1c24] py-[10px] items-center border-t-2 bg-[#fff] font-semibold text-xs text-[rgba(17,17,17,.85)] uppercase px-4 border-x-[1px] ">
+                  <div className="border-t-[#ed1c24] border-top-style  py-[10px] items-center border-t-2 bg-[#fff] font-semibold text-xs border-right-style border-left-style text-[rgba(17,17,17,.85)] uppercase px-4 border-x-[1px] ">
                     Mô tả
                   </div>
                 </div>
               </div>
-              <div className="border-[1px] w-full bg-[#fff] p-[30px]">
-                {/* <div className="p-0 ">
-                  <p className="mt-0 mb-5">
-                    Thương hiệu đồng hồ thể thao G-Shock thuộc sở hữu và sản xuất bởi tập đoàn Casio Computer Nhật Bản. Tất cả các sản phẩm
-                    G-Shock đều được trang bị khả năng chống sốc, phân tán lực va đập và chống nước đến độ sâu 200 mét, giúp đồng hồ G-Shock
-                    trở thành một trong những thương hiệu đồng hồ bền bỉ nhất hiện nay.Đồng hồ thời trang G-SHOCK là một thương hiệu đồng hồ
-                    nổi tiếng của Nhật Bản được giới trẻ yêu thích trên toàn thế giới. Với nhiều mẫu mã đa dạng, từ thiết kế cổ điển đến
-                    hiện đại, G-SHOCK đã trở thành một biểu tượng thời trang đường phố được yêu thích trên toàn thế giới.
-                  </p>
-                  <hr className="mx-0 my-4 border-0 opacity-10 border-t-[1px] border-t-current" />
-                  <h3 className="text-[#555] text-xl font-bold uppercase my-5">Thông tin cơ bản</h3>
-                  <table className="w-full mb-4 border-spacing-0 ">
-                    <tbody>
-                      <tr>
-                        <th className="pl-0 leading-4 uppercase py-2 pr-2 text-left border-b-[1px] text-sm">Độ dày</th>
-                        <td className="pr-0 text-[#666]  py-2 pl-2 leading-5 text-sm border-b-[1px] text-left">
-                          <p className="mx-0 my-2">16.9mm</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th className="pl-0 leading-4 uppercase py-2 pr-2 text-left border-b-[1px] text-sm">Kích thước</th>
-                        <td className="pr-0 text-[#666]  py-2 pl-2 leading-5 text-sm border-b-[1px] text-left">
-                          <p className="mx-0 my-2">51.2mm</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th className="pl-0 leading-4 uppercase py-2 pr-2 text-left border-b-[1px] text-sm">trọng lượng</th>
-                        <td className="pr-0 text-[#666]  py-2 pl-2 leading-5 text-sm border-b-[1px] text-left">
-                          <p className="mx-0 my-2">72g</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th className="pl-0 leading-4 uppercase py-2 pr-2 text-left border-b-[1px] text-sm">Xuất xứ</th>
-                        <td className="pr-0 text-[#666]  py-2 pl-2 leading-5 text-sm border-b-[1px] text-left">
-                          <p className="mx-0 my-2">Nhật bản</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th className="pl-0 leading-4 uppercase py-2 pr-2 text-left border-b-[1px] text-sm">Thương hiệu</th>
-                        <td className="pr-0 text-[#666]  py-2 pl-2 leading-5 text-sm border-b-[1px] text-left">
-                          <p className="mx-0 my-2">G-SHOCK</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th className="pl-0 leading-4 uppercase py-2 pr-2 text-left border-b-[1px] text-sm">dÂY ĐEO</th>
-                        <td className="pr-0 text-[#666]  py-2 pl-2 leading-5 text-sm border-b-[1px] text-left">
-                          <p className="mx-0 my-2">Dây đeo bằng nhựa</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th className="pl-0 leading-4 uppercase py-2 pr-2 text-left border-b-[1px] text-sm">Chất liệu mặt kính</th>
-                        <td className="pr-0 text-[#666]  py-2 pl-2 leading-5 text-sm border-b-[1px] text-left">
-                          <p className="mx-0 my-2">Mặt kính khoáng</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th className="pl-0 leading-4 uppercase py-2 pr-2 text-left border-b-[1px] text-sm">Mức độ chống nước</th>
-                        <td className="pr-0 text-[#666]  py-2 pl-2 leading-5 text-sm border-b-[1px] text-left">
-                          <p className="mx-0 my-2">200m</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th className="pl-0 leading-4 uppercase py-2 pr-2 text-left border-b-[1px] text-sm">Màu đèn</th>
-                        <td className="pr-0 text-[#666]  py-2 pl-2 leading-5 text-sm border-b-[1px] text-left">
-                          <p className="mx-0 my-2">ĐÈN LED</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th className="pl-0 leading-4 uppercase py-2 pr-2 text-left border-b-[1px] text-sm">Cấu trúc</th>
-                        <td className="pr-0 text-[#666]  py-2 pl-2 leading-5 text-sm border-b-[1px] text-left">
-                          <p className="mx-0 my-2">Chống từ , chống va đập</p>
-                        </td>
-                      </tr>
-                      <tr>
-                        <th className="pl-0 leading-4 uppercase py-2 pr-2 text-left border-b-[1px] text-sm">Bộ nguồn và tuổi thọ pin</th>
-                        <td className="pr-0 text-[#666]  py-2 pl-2 leading-5 text-sm border-b-[1px] text-left">
-                          <p className="mx-0 my-2">Tuổi thọ pin xấp xỉ: 2 năm đối với pin CR1220</p>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div> */}
-                <div className="" dangerouslySetInnerHTML={{ __html: `${productDetail?.discription}` }}></div>
+              <div className="border-[1px] border-style w-full bg-[#fff] p-[30px]">
+                <div dangerouslySetInnerHTML={{ __html: `${productDetail?.discription}` }}></div>
               </div>
-            </div>
-            <div className="border-t-[1px] mb-7 ">
-              <FavoriteProduct></FavoriteProduct>
             </div>
           </div>
         </div>

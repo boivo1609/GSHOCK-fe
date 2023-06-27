@@ -103,7 +103,7 @@ const AuthRegister = (props) => {
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Stack spacing={1}>
-                  <InputLabel htmlFor="firstname-signup">Tên</InputLabel>
+                  <InputLabel htmlFor="firstname-signup">Tên tài khoản</InputLabel>
                   <OutlinedInput
                     id="name-login"
                     type="name"

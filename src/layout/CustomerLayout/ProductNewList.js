@@ -10,7 +10,6 @@ import { Link } from 'react-router-dom';
 const ProductNewList = () => {
   const dispatch = useDispatch();
   const { productState } = useSelector((state) => ({ productState: state.products }), shallowEqual);
-  console.log(productState);
   const { productCustomer: listProduct } = productState;
   useEffect(() => {
     dispatch(
