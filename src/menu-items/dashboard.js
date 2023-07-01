@@ -23,7 +23,7 @@ const dashboard = {
     },
     {
       id: 'danhmuc',
-      title: 'Quản lý danh mục',
+      title: 'Quản lý Danh mục',
       type: 'item',
       url: '/admin/danhmuc',
       icon: icons.DashboardOutlined,
@@ -31,7 +31,7 @@ const dashboard = {
     },
     {
       id: 'products',
-      title: 'Quản lý sản phẩm',
+      title: 'Quản lý Sản phẩm',
       type: 'item',
       url: '/admin/products-manager',
       icon: icons.DashboardOutlined,
@@ -39,7 +39,7 @@ const dashboard = {
     },
     {
       id: 'color',
-      title: 'Quản lý màu sắc',
+      title: 'Quản lý Màu sắc',
       type: 'item',
       url: '/admin/color',
       icon: icons.DashboardOutlined,
@@ -55,9 +55,17 @@ const dashboard = {
     },
     {
       id: 'order',
-      title: 'Quản lý Đơn Đặt Hàng',
+      title: 'Quản lý Đơn Hàng',
       type: 'item',
       url: '/admin/order',
+      icon: icons.DashboardOutlined,
+      breadcrumbs: true
+    },
+    {
+      id: 'user',
+      title: 'Quản lý Người dùng',
+      type: 'item',
+      url: '/admin/user',
       icon: icons.DashboardOutlined,
       breadcrumbs: true
     }

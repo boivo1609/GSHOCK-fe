@@ -22,7 +22,7 @@ const App = ({ store, persistor }) => {
             <ToastContainer autoClose={2000} pauseOnFocusLoss={false} draggable pauseOnHover={false} />
             <SnackbarProvider
               autoHideDuration={3000}
-              anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               iconVariant={{
                 info: <InfoIcon />,
                 success: <CheckCircleIcon />,

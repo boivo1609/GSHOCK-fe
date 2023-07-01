@@ -10,6 +10,7 @@ import { bannerSlice } from 'pages/Admin/Banner/api/sliceBanner';
 import { productSlice } from 'pages/Admin/SanPham/api/sliceProduct';
 import { cartSlice } from 'pages/Customer/Cart/_redux/cartSlice';
 import { orderSlice } from 'pages/Admin/Order/api/orderSlice';
+import { UserSlice } from 'pages/Admin/User/api/UserSlice';
 
 export const rootReducer = combineReducers({
   auth: auth.reducer,
@@ -20,7 +21,8 @@ export const rootReducer = combineReducers({
   banners: bannerSlice.reducer,
   products: productSlice.reducer,
   carts: cartSlice.reducer,
-  orders: orderSlice.reducer
+  orders: orderSlice.reducer,
+  users: UserSlice.reducer
 });
 
 export function* rootSaga() {

@@ -72,13 +72,9 @@ const Header = () => {
     <header className=" w-full z-10 bg-white  ">
       <div className="header ">
         <div className="flex items-center justify-between px-6 py-4 w-full mx-auto">
-          <div className="w-80 ml-0 mr-7 m-0 leading-none max-h-full">
+          <div className=" ml-0 mr-7 m-0 leading-none max-h-full">
             <Link to="/" title="G-shock chính hãng">
-              <img
-                src="https://upload.wikimedia.org/wikipedia/en/thumb/8/81/GShock_logo.svg/1200px-GShock_logo.svg.png"
-                alt=""
-                className="max-h-24 w-auto "
-              />
+              <img src="/GShock_logo.png" alt="" className="max-h-24 w-20 " />
             </Link>
           </div>
           <div className="mr-auto ml-20 w-4/12">

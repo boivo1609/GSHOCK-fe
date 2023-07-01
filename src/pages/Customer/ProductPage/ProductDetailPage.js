@@ -19,7 +19,7 @@ import { useSnackbar } from 'notistack';
 import * as cartActions from '../Cart/_redux/cartAction';
 const ProductDetailPage = () => {
   const { currentState } = useSelector((state) => ({ currentState: state.auth }), shallowEqual);
-  console.log(currentState);
+
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch();
   const { productState, cartState } = useSelector((state) => ({ productState: state.products, cartState: state.carts }), shallowEqual);

@@ -57,7 +57,7 @@ const PaymentPage = () => {
     lastName: '',
     address: '',
     phone: '',
-    email: '',
+    email: authState?.authToken?.user?.email || '',
     orderStatus: 'cash'
   };
   const methods = useForm({

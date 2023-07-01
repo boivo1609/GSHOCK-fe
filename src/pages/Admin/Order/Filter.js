@@ -3,12 +3,12 @@ import { Box, Stack, Button } from '@mui/material';
 import FilterInput from 'components/search/FilterInput';
 
 const Filter = (props) => {
-  const [value, setValue] = useState({ name: '' });
+  const [value, setValue] = useState({ lastName: '' });
   const handleChange = (e) => {
-    const { name, value } = e.target;
+    const { lastName, value } = e.target;
     setValue({
       ...value,
-      [name]: value
+      [lastName]: value
     });
   };
   const handleFilter = () => {
@@ -17,7 +17,7 @@ const Filter = (props) => {
   return (
     <Box sx={{ paddingY: 3, display: 'flex', alignItem: 'center', justifyContent: 'space-between' }}>
       <Stack direction="row" spacing={4}>
-        <FilterInput value={value.name} onChange={handleChange} name="name" />
+        <FilterInput value={value.name} onChange={handleChange} name="lastName" />
         <Button variant="contained" onClick={handleFilter}>
           Lọc
         </Button>
