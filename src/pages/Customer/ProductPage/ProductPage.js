@@ -14,7 +14,7 @@ const LABELS_MAP_STATUS = {
   desc: 'Giá từ cao đến thấp'
 };
 function valuetext(value) {
-  return `${value}°C`;
+  return `${value}đ`;
 }
 
 const minDistance = 0;
@@ -135,8 +135,8 @@ const ProductPage = () => {
       </div>
       <div className="bg-[#fff] relative">
         <div className="max-w-[1430px] pt-5 w-full mx-auto">
-          <div className="flex">
-            <div className="col max-w-[25%] basis-[25%]">
+          <div className="flex ">
+            <div className="col max-w-[25%] basis-[25%]  ">
               <div className="ml-auto mr-0">
                 <aside className="mb-6">
                   <span className="text-sm font-semibold uppercase ">Danh mục sản phẩm</span>
@@ -179,10 +179,12 @@ const ProductPage = () => {
                     max={500000000}
                     getAriaLabel={() => 'Minimum distance'}
                     value={value}
+                    step={1000000}
                     onChange={handleChange}
                     valueLabelDisplay="auto"
                     getAriaValueText={valuetext}
                     disableSwap
+                    color="error"
                   />
                 </Box>
                 <Typography sx={{ fontWeight: 'bold', marginBottom: '10px', marginTop: '10px' }}>LỌC THEO MÀU </Typography>
@@ -197,7 +199,7 @@ const ProductPage = () => {
                 <aside className="mb-6"></aside>
               </div>
             </div>
-            <div className="col max-w-[75%] basis-[75%]">
+            <div className="col max-w-[75%] basis-[75%] ">
               <Stack
                 mb={10}
                 alignItems="flex-start"

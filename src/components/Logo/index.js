@@ -6,7 +6,7 @@ import { ButtonBase } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 
 // project import
-import Logo from './Logo';
+// import Logo from './Logo';
 import { activeItem } from 'store/reducers/menu';
 
 // ==============================|| MAIN LOGO ||============================== //
@@ -16,7 +16,8 @@ const LogoSection = ({ sx }) => {
   const dispatch = useDispatch();
   return (
     <ButtonBase disableRipple component={Link} onClick={() => dispatch(activeItem({ openItem: [defaultId] }))} to={'/'} sx={sx}>
-      <Logo />
+      {/* <Logo /> */}
+      <img src="/GShock_logo.png" alt="" className="max-h-24 w-20 " />
     </ButtonBase>
   );
 };

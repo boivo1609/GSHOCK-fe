@@ -86,6 +86,7 @@ const ProductCreateDialog = (props) => {
   const { data: listColor } = colorState;
   const [content, setContent] = useState('');
   const [files, setFiles] = useState([]);
+  const [open, setOpen] = useState(false);
   const { getRootProps, getInputProps } = useDropzone({
     accept: {
       'image/*': []
@@ -102,7 +103,20 @@ const ProductCreateDialog = (props) => {
   });
   const productSchema = Yup.object().shape({
     name: Yup.string().required('Tên sản phẩm là trường bắt buộc'),
-    soLuongSanPham: Yup.string().required('Số lượng là trường bắt buộc')
+    soLuongSanPham: Yup.string().required('Số lượng là trường bắt buộc'),
+    colors: Yup.array()
+      .of(
+        Yup.object().shape({
+          _id: Yup.string(),
+          name: Yup.string()
+        })
+      )
+      .min(1, 'Chọn ít nhất 1 màu sắc')
+      .required('Required'),
+    categoryId: Yup.object().required('Danh mục là trường bắt buộc').nullable(),
+    price: Yup.number()
+      .test('Is positive?', 'Giá là trường bắt buộc và lớn hơn 0', (value) => value > 0)
+      .typeError('Giá là trường bắt buộc và lớn hơn 0')
   });
   const defaultValues = {
     name: '',
@@ -177,8 +191,8 @@ const ProductCreateDialog = (props) => {
         const transformData = {
           ...values,
           categoryId: values.categoryId.id,
-          discription: content,
-          imageToDeletePublicId: props.data?.imagePublicId
+          discription: content
+          // imageToDeletePublicId: props.data?.imagePublicId
         };
         formData.append('image', files?.[0]);
         formData.append('data', JSON.stringify(transformData));
@@ -249,10 +263,28 @@ const ProductCreateDialog = (props) => {
                 <Typography mb={1}>Tên sản phẩm</Typography>
                 <RHFTextField name="name" />
               </FormControl>
-              <FormControl width="30">
-                <Typography mb={1}>Số lượng</Typography>
-                <RHFTextField name="soLuongSanPham" />
-              </FormControl>
+              <Stack direction="row">
+                <FormControl width="30">
+                  <Typography mb={1}>Số lượng</Typography>
+                  <RHFTextField name="soLuongSanPham" disabled={props.isEdit} />
+                </FormControl>
+                {props.isEdit && !open && (
+                  <Button className="w-[200px] h-8 mt-9 ml-1" size="small" variant="text" color="primary" onClick={() => setOpen(true)}>
+                    Thêm số lượng
+                  </Button>
+                )}
+              </Stack>
+              {open && (
+                <Stack direction="row">
+                  <FormControl width="30">
+                    <Typography mb={1}>Thêm số lượng</Typography>
+                    <RHFTextField name="soLuongThem" />
+                  </FormControl>
+                  <Button variant="text" className="w-[250px] h-8 mt-9 ml-1" size="small" color="error" onClick={() => setOpen(false)}>
+                    Xóa thêm số lượng
+                  </Button>
+                </Stack>
+              )}
             </Stack>
             <Stack direction="row" spacing={2} mb={4}>
               <FormControl fullWidth>
@@ -264,9 +296,6 @@ const ProductCreateDialog = (props) => {
                   options={listColor ? listColor.map((item) => ({ _id: item._id.toString(), name: item.name })) : []}
                   getOptionLabel={(option) => option.name}
                   isOptionEqualToValue={(option, value) => option._id === value._id}
-                  onChange={(e, newValue) => {
-                    setValue('colors', newValue);
-                  }}
                 />
               </FormControl>
               <FormControl fullWidth>
@@ -277,9 +306,6 @@ const ProductCreateDialog = (props) => {
                   options={listDanhMuc ? listDanhMuc.map((item) => ({ id: item._id, name: item.name })) : []}
                   getOptionLabel={(option) => option.name}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
-                  onChange={(e, newValue) => {
-                    setValue('categoryId', newValue);
-                  }}
                 />
               </FormControl>
             </Stack>
@@ -318,7 +344,7 @@ const ProductCreateDialog = (props) => {
               </FormControl>
             </Stack>
             <Stack direction="column">
-              <Typography mb={1}>Chi tiet sp</Typography>
+              <Typography mb={1}>Chi tiết sản phẩm</Typography>
               <div className="w-full entry-content quill">
                 <ReactQuill theme="snow" value={content} modules={modules} onChange={setContent} />
               </div>

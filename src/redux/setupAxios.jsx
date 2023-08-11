@@ -29,7 +29,7 @@ export default function setupAxios(axios, store) {
     },
     (error) => {
       store.dispatch(rootAction.setLoading({ isLoading: false }));
-      toast.error(error.response.data);
+      toast.error(error.response.data?.message);
       return error;
     }
   );

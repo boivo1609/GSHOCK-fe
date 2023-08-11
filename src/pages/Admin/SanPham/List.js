@@ -40,13 +40,13 @@ const ProductList = () => {
     { id: 'discount', label: ' % Giảm giá' },
     { id: 'price_discount', label: 'Giá chính thức' },
     { id: 'so_luong', label: 'Số lượng' },
+    { id: 'soluong_conlai', label: 'Số lượng còn lại' },
     { id: 'createdAt', label: 'Ngày tạo' },
     { id: 'status', label: 'Trạng thái' },
     { id: 'action', label: 'Hành động' }
   ];
   const mapKey = [
     { label: 'name', type: string },
-
     { label: 'categoryId', type: string },
     { label: 'image', type: string },
     { label: 'colors', type: string },
@@ -54,6 +54,7 @@ const ProductList = () => {
     { label: 'discount', type: number },
     { label: 'price_discount', type: number },
     { label: 'so_luong', type: number },
+    { label: 'soluong_conlai', type: number },
     { label: 'createdAt', type: string },
     { label: 'status', type: string }
   ];

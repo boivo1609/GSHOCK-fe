@@ -6,7 +6,7 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import * as bannerActions from '../../Admin/Banner/api/actionsBanner';
 // import required modules
-import { Pagination, Navigation } from 'swiper';
+import { Pagination, Navigation, Autoplay } from 'swiper';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 const HomeBanner = () => {
@@ -27,11 +27,15 @@ const HomeBanner = () => {
         slidesPerView={'auto'}
         spaceBetween={0}
         loop={true}
+        autoplay={{
+          delay: 2000,
+          disableOnInteraction: false
+        }}
         pagination={{
           clickable: true
         }}
         navigation={true}
-        modules={[Pagination, Navigation]}
+        modules={[Pagination, Navigation, Autoplay]}
         className="mySwiper"
       >
         {listBanner?.slice(0, 4)?.map((item) => (
