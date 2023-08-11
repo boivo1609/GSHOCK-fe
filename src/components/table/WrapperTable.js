@@ -16,8 +16,12 @@ import { BsTrash } from 'react-icons/bs';
 import { FiEdit } from 'react-icons/fi';
 import { AiFillEye } from 'react-icons/ai';
 import { convertToVND } from 'utils/convertPrice';
-
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 const WrapperTable = (props) => {
+  const dispatch = useDispatch();
+  const { currentState } = useSelector((state) => ({ currentState: state.auth }), shallowEqual);
+  console.log(currentState);
+
   const handeDelete = (id) => {
     props.onDeleteRow(id);
   };
@@ -89,15 +93,33 @@ const WrapperTable = (props) => {
                       }
                       if (item.label === 'allow_status') {
                         if (row.allow_status === 0) {
+                          if (currentState?.authToken?.user?.role === 'admin') {
+                            return (
+                              <TableCell key={idx}>
+                                <Label
+                                  variant="soft"
+                                  color="warning"
+                                  className="cursor-pointer"
+                                  onClick={() => props.onDuyetDonHang(row._id)}
+                                >
+                                  Chưa duyệt
+                                </Label>
+                              </TableCell>
+                            );
+                          }
                           return (
                             <TableCell key={idx}>
-                              <Label
-                                variant="soft"
-                                color="warning"
-                                className="cursor-pointer"
-                                onClick={() => props.onDuyetDonHang(row._id)}
-                              >
+                              <Label variant="soft" color="warning">
                                 Chưa duyệt
+                              </Label>
+                            </TableCell>
+                          );
+                        }
+                        if (row.allow_status === 2) {
+                          return (
+                            <TableCell key={idx}>
+                              <Label variant="soft" color="error">
+                                Đã hủy đơn
                               </Label>
                             </TableCell>
                           );
@@ -225,6 +247,13 @@ const WrapperTable = (props) => {
                               <AiFillEye className="text-blue-500"></AiFillEye>
                             </IconButton>
                           </Tooltip>
+                          {currentState?.authToken?.user?.role === 'user' && row.allow_status === 0 && (
+                            <Tooltip title="Hủy đơn hàng">
+                              <IconButton onClick={(e) => props.onHuyDonHang(row._id)}>
+                                <BsTrash className="text-red-500"></BsTrash>
+                              </IconButton>
+                            </Tooltip>
+                          )}
                         </Stack>
                       </TableCell>
                     )}

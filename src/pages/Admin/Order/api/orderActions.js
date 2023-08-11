@@ -18,6 +18,20 @@ export const getOrderPanigation = (queryParams) => (dispatch) => {
       dispatch(actions.catchError({ error, callType: callTypes.list }));
     });
 };
+
+export const getOrderByUser = (queryParams) => (dispatch) => {
+  dispatch(actions.startCall({ callType: callTypes.list }));
+  return requestFromServer
+    .getAllOrderByUser(queryParams) //goi ben crud
+    .then((response) => {
+      const { content, size, totalElements, totalPages } = response.data;
+      dispatch(actions.OrderHistory({ content, size, totalElements, totalPages })); // gui du lieu len redux
+    })
+    .catch((error) => {
+      error.clientMessage = "Can't find projects";
+      dispatch(actions.catchError({ error, callType: callTypes.list }));
+    });
+};
 export const createOrder = (values) => (dispatch) => {
   dispatch(actions.startCall({ callType: callTypes.list }));
   return requestFromServer
@@ -42,6 +56,18 @@ export const duyetDonHang = (id) => (dispatch) => {
     .duyetDonHang(id)
     .then((response) => {
       dispatch(actions.duyetDonHang({ id }));
+    })
+    .catch((error) => {
+      error.clientMessage = "Can't delete point";
+      dispatch(actions.catchError({ error, callType: callTypes.action }));
+    });
+};
+export const deleteOrderUser = (id) => (dispatch) => {
+  dispatch(actions.startCall({ callType: callTypes.action }));
+  return requestFromServer
+    .deleteOrderByUser(id)
+    .then((response) => {
+      dispatch(actions.deleteOrderHistory({ id }));
     })
     .catch((error) => {
       error.clientMessage = "Can't delete point";

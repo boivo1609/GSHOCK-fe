@@ -7,7 +7,7 @@ const ProductFeatured = () => {
   const dispatch = useDispatch();
   const { productState } = useSelector((state) => ({ productState: state.products }), shallowEqual);
   const { productCustomer: listProduct } = productState;
-  console.log(listProduct);
+
   useEffect(() => {
     dispatch(
       productActions.getAllProduct({

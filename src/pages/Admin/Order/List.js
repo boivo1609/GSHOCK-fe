@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect } from 'react';
-import Filter from './Filter';
+
 import { number, string } from 'prop-types';
 import ConfirmDialog from 'components/dialog/ConfirmDialog';
 import Breadcrumbs from 'components/@extended/Breadcrumbs';
@@ -17,7 +17,7 @@ const OrderList = () => {
   const [dataRow, setDataRow] = React.useState(null);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const { currentState } = useSelector((state) => ({ currentState: state.orders }), shallowEqual);
-
+  console.log(currentState);
   const { data, order, orderId, orderForEdit, listLoading, totalElements, duyetDonHangId } = currentState;
   const [openConfirm, setOpenConfirm] = React.useState(false);
   const [idOrder, setIdOrder] = React.useState(null);
@@ -84,7 +84,6 @@ const OrderList = () => {
       <Box>
         <Breadcrumbs navigation={navigation} title />
         <Card sx={{ paddingX: 2 }}>
-          <Filter onFilter={handleFilter} />
           <Fade
             in={listLoading}
             style={{

@@ -9,7 +9,9 @@ const initialOrderState = {
   orderId: undefined,
   orderSuccess: null,
   lastError: null,
-  duyetDonHangId: undefined
+  duyetDonHangId: undefined,
+  orderHistory: undefined,
+  deleteOrderId: undefined
 };
 export const callTypes = {
   list: 'list',
@@ -58,6 +60,20 @@ export const orderSlice = createSlice({
     duyetDonHang: (state, action) => {
       state.error = null;
       state.duyetDonHangId = action.payload.id;
+      state.actionsLoading = false;
+    },
+    OrderHistory: (state, action) => {
+      const { content, size, totalElements, totalPages } = action.payload;
+      state.listLoading = false;
+      state.error = null;
+      state.orderHistory = content;
+      state.size = size;
+      state.totalElements = totalElements;
+      state.totalPages = totalPages;
+    },
+    deleteOrderHistory: (state, action) => {
+      state.error = null;
+      state.deleteOrderId = action.payload.id;
       state.actionsLoading = false;
     }
   }

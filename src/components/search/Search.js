@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 // import { FiSearch } from 'react-icons/fi';
-import './search.scss';
+
 import { useNavigate } from 'react-router-dom';
 import { convertToVND } from 'utils/convertPrice';
 import * as productActions from '../../pages/Admin/SanPham/api/actionsProduct';

@@ -17,6 +17,8 @@ import PaymentPage from 'pages/Customer/Payment/PaymentPage';
 import OrderSuccessPage from 'pages/Customer/Payment/OrderSuccessPage';
 import OrderList from 'pages/Admin/Order/List';
 import UserList from 'pages/Admin/User/List';
+import OrderHistory from 'pages/Customer/OrderHistory/OrderHistory';
+import UpdateUser from 'pages/Customer/UpdateUser/UpdateUser';
 const AuthLogin = Loadable(lazy(() => import('pages/authentication/Login')));
 const AuthRegister = Loadable(lazy(() => import('pages/authentication/Register')));
 const DashboardDefault = Loadable(lazy(() => import('pages/dashboard')));
@@ -87,6 +89,14 @@ const router = (isLoggedIn) => [
       {
         path: '/order-success',
         element: <OrderSuccessPage></OrderSuccessPage>
+      },
+      {
+        path: 'orderhistory',
+        element: <OrderHistory></OrderHistory>
+      },
+      {
+        path: 'update-user',
+        element: <UpdateUser></UpdateUser>
       },
       {
         path: 'register',

@@ -103,7 +103,20 @@ const ProductCreateDialog = (props) => {
   });
   const productSchema = Yup.object().shape({
     name: Yup.string().required('Tên sản phẩm là trường bắt buộc'),
-    soLuongSanPham: Yup.string().required('Số lượng là trường bắt buộc')
+    soLuongSanPham: Yup.string().required('Số lượng là trường bắt buộc'),
+    colors: Yup.array()
+      .of(
+        Yup.object().shape({
+          _id: Yup.string(),
+          name: Yup.string()
+        })
+      )
+      .min(1, 'Chọn ít nhất 1 màu sắc')
+      .required('Required'),
+    categoryId: Yup.object().required('Danh mục là trường bắt buộc').nullable(),
+    price: Yup.number()
+      .test('Is positive?', 'Giá là trường bắt buộc và lớn hơn 0', (value) => value > 0)
+      .typeError('Giá là trường bắt buộc và lớn hơn 0')
   });
   const defaultValues = {
     name: '',
@@ -283,9 +296,6 @@ const ProductCreateDialog = (props) => {
                   options={listColor ? listColor.map((item) => ({ _id: item._id.toString(), name: item.name })) : []}
                   getOptionLabel={(option) => option.name}
                   isOptionEqualToValue={(option, value) => option._id === value._id}
-                  onChange={(e, newValue) => {
-                    setValue('colors', newValue);
-                  }}
                 />
               </FormControl>
               <FormControl fullWidth>
@@ -296,9 +306,6 @@ const ProductCreateDialog = (props) => {
                   options={listDanhMuc ? listDanhMuc.map((item) => ({ id: item._id, name: item.name })) : []}
                   getOptionLabel={(option) => option.name}
                   isOptionEqualToValue={(option, value) => option.id === value.id}
-                  onChange={(e, newValue) => {
-                    setValue('categoryId', newValue);
-                  }}
                 />
               </FormControl>
             </Stack>
@@ -337,7 +344,7 @@ const ProductCreateDialog = (props) => {
               </FormControl>
             </Stack>
             <Stack direction="column">
-              <Typography mb={1}>Chi tiet sp</Typography>
+              <Typography mb={1}>Chi tiết sản phẩm</Typography>
               <div className="w-full entry-content quill">
                 <ReactQuill theme="snow" value={content} modules={modules} onChange={setContent} />
               </div>

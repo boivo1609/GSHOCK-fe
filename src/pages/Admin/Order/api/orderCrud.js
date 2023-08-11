@@ -10,3 +10,9 @@ export function getListOrderPanigation(queryParams) {
 export function duyetDonHang(id) {
   return axios.put(`${ORDER_URL}/duyetDonHang/${id}`);
 }
+export function getAllOrderByUser(queryParams) {
+  return axios.get(`${ORDER_URL}/orderhistory`, queryParams);
+}
+export function deleteOrderByUser(id) {
+  return axios.put(`${ORDER_URL}/deleteorder/${id}`);
+}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+
 import * as auth from '../_redux/authRedux';
 import { connect } from 'react-redux';
 // material-ui
@@ -9,7 +9,6 @@ import {
   FormControlLabel,
   FormHelperText,
   Grid,
-  Link,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -97,7 +96,7 @@ const AuthLogin = (props) => {
                     name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="Enter email address"
+                    placeholder="Nhập địa chỉ email"
                     fullWidth
                     error={Boolean(touched.email && errors.email)}
                   />
@@ -133,7 +132,7 @@ const AuthLogin = (props) => {
                         </IconButton>
                       </InputAdornment>
                     }
-                    placeholder="Enter password"
+                    placeholder="Nhập mật khẩu"
                   />
                   {touched.password && errors.password && (
                     <FormHelperText error id="standard-weight-helper-text-password-login">
@@ -157,9 +156,9 @@ const AuthLogin = (props) => {
                     }
                     label={<Typography variant="h6">Ghi nhớ mật khẩu</Typography>}
                   />
-                  <Link variant="h6" component={RouterLink} to="" color="text.primary">
+                  {/* <Link variant="h6" component={RouterLink} to="" color="text.primary">
                     Quên mật khẩu?
-                  </Link>
+                  </Link> */}
                 </Stack>
               </Grid>
               {errors.submit && (

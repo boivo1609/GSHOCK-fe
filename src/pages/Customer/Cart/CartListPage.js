@@ -12,6 +12,8 @@ const CartListPage = () => {
   const { cartState } = useSelector((state) => ({ cartState: state.carts }), shallowEqual);
 
   const { cart: listCart, cartTotalQuantity, cartTotalAmount } = cartState;
+  console.log(listCart);
+
   const [quantity, setQuantity] = useState(1);
   const { enqueueSnackbar } = useSnackbar();
   const handleDeleToCart = (item) => {
@@ -21,8 +23,14 @@ const CartListPage = () => {
     });
   };
   const handleIncrease = (item) => {
-    setQuantity(item.cartQuantity);
-    dispatch(cartActions.increaseCart(item));
+    if (item.cartQuantity >= item.soluong_conlai) {
+      enqueueSnackbar('Số lượng đặt hàng phải nhỏ hơn số lượng sản phẩm trong kho', {
+        variant: 'warning'
+      });
+    } else {
+      setQuantity(item.cartQuantity);
+      dispatch(cartActions.increaseCart(item));
+    }
   };
   const handleDecrement = (item) => {
     setQuantity(item.cartQuantity);
@@ -94,7 +102,7 @@ const CartListPage = () => {
                                 </button>
                               </td>
                               <td className="py-4 min-w-[60px] w-[90px] max-w-[90px] p-2 border-b-[1px] border-bot-style ">
-                                <Link to="/">
+                                <Link to={`/products/${item._id}`}>
                                   <img src={item.image} alt="" className="h-[95px] w-[79px] inline-block align-middle max-w-full " />
                                 </Link>
                               </td>

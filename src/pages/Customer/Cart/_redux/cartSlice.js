@@ -39,7 +39,7 @@ export const cartSlice = createSlice({
     addToCart: (state, action) => {
       const itemIndex = state.cart.findIndex((item) => item._id === action.payload._id && item.colors._id === action.payload.colors._id);
       if (itemIndex >= 0) {
-        state.cart[itemIndex].cartQuantity += 1;
+        state.cart[itemIndex].cartQuantity += action.payload.cartQuantity;
       } else {
         const tempProduct = { ...action.payload, cartQuantity: action.payload.cartQuantity };
         state.cart.push(tempProduct);

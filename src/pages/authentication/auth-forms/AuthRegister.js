@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+
 import { connect } from 'react-redux';
 import * as auth from '../_redux/authRedux';
 // material-ui
@@ -10,7 +10,6 @@ import {
   FormControl,
   FormHelperText,
   Grid,
-  Link,
   IconButton,
   InputAdornment,
   InputLabel,
@@ -65,8 +64,8 @@ const AuthRegister = (props) => {
           submit: null
         }}
         validationSchema={Yup.object().shape({
-          name: Yup.string().max(255).required(' Name là trường bắt buộc'),
-          email: Yup.string().email('email phải đúng định dạng').max(255).required('Email là trường bắt buộc'),
+          name: Yup.string().max(255).required(' Tên tài khoản là trường bắt buộc'),
+          email: Yup.string().email('Email phải đúng định dạng').max(255).required('Email là trường bắt buộc'),
           password: Yup.string().max(255).required('Mật khẩu là trường bắt buộc')
         })}
         onSubmit={async (values, { setErrors, setStatus, setSubmitting }) => {
@@ -111,7 +110,7 @@ const AuthRegister = (props) => {
                     name="name"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="John"
+                    placeholder="Nhập tên tài khoản"
                     fullWidth
                     error={Boolean(touched.name && errors.name)}
                   />
@@ -135,7 +134,7 @@ const AuthRegister = (props) => {
                     name="email"
                     onBlur={handleBlur}
                     onChange={handleChange}
-                    placeholder="demo@company.com"
+                    placeholder="Nhập địa chỉ email"
                     inputProps={{}}
                   />
                   {touched.email && errors.email && (
@@ -173,7 +172,7 @@ const AuthRegister = (props) => {
                         </IconButton>
                       </InputAdornment>
                     }
-                    placeholder="******"
+                    placeholder="Nhập mật khẩu"
                     inputProps={{}}
                   />
                   {touched.password && errors.password && (
@@ -195,18 +194,7 @@ const AuthRegister = (props) => {
                   </Grid>
                 </FormControl>
               </Grid>
-              <Grid item xs={12}>
-                <Typography variant="body2">
-                  By Signing up, you agree to our &nbsp;
-                  <Link variant="subtitle2" component={RouterLink} to="#">
-                    Terms of Service
-                  </Link>
-                  &nbsp; and &nbsp;
-                  <Link variant="subtitle2" component={RouterLink} to="#">
-                    Privacy Policy
-                  </Link>
-                </Typography>
-              </Grid>
+
               {errors.submit && (
                 <Grid item xs={12}>
                   <FormHelperText error>{errors.submit}</FormHelperText>

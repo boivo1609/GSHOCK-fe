@@ -1,9 +1,20 @@
 // assets
 import { DashboardOutlined } from '@ant-design/icons';
-
+import { MdOutlineColorLens } from 'react-icons/md';
+import { BsFillImageFill } from 'react-icons/bs';
+import { IoMdListBox } from 'react-icons/io';
+import { FaUserCheck } from 'react-icons/fa';
+import { BsSmartwatch } from 'react-icons/bs';
+import { AiOutlineUnorderedList } from 'react-icons/ai';
 // icons
 const icons = {
-  DashboardOutlined
+  DashboardOutlined,
+  MdOutlineColorLens,
+  AiOutlineUnorderedList,
+  BsSmartwatch,
+  BsFillImageFill,
+  IoMdListBox,
+  FaUserCheck
 };
 
 // ==============================|| MENU ITEMS - DASHBOARD ||============================== //
@@ -13,20 +24,20 @@ const dashboard = {
 
   type: 'group',
   children: [
-    {
-      id: 'dashboard',
-      title: 'Dashboard',
-      type: 'item',
-      url: '/admin',
-      icon: icons.DashboardOutlined,
-      breadcrumbs: false
-    },
+    // {
+    //   id: 'dashboard',
+    //   title: 'Dashboard',
+    //   type: 'item',
+    //   url: '/admin',
+    //   icon: icons.DashboardOutlined,
+    //   breadcrumbs: false
+    // },
     {
       id: 'danhmuc',
       title: 'Quản lý Danh mục',
       type: 'item',
       url: '/admin/danhmuc',
-      icon: icons.DashboardOutlined,
+      icon: icons.AiOutlineUnorderedList,
       breadcrumbs: true
     },
     {
@@ -34,7 +45,7 @@ const dashboard = {
       title: 'Quản lý Sản phẩm',
       type: 'item',
       url: '/admin/products-manager',
-      icon: icons.DashboardOutlined,
+      icon: icons.BsSmartwatch,
       breadcrumbs: true
     },
     {
@@ -42,7 +53,7 @@ const dashboard = {
       title: 'Quản lý Màu sắc',
       type: 'item',
       url: '/admin/color',
-      icon: icons.DashboardOutlined,
+      icon: icons.MdOutlineColorLens,
       breadcrumbs: true
     },
     {
@@ -50,7 +61,7 @@ const dashboard = {
       title: 'Quản lý Banner',
       type: 'item',
       url: '/admin/banner',
-      icon: icons.DashboardOutlined,
+      icon: icons.BsFillImageFill,
       breadcrumbs: true
     },
     {
@@ -58,7 +69,7 @@ const dashboard = {
       title: 'Quản lý Đơn Hàng',
       type: 'item',
       url: '/admin/order',
-      icon: icons.DashboardOutlined,
+      icon: icons.IoMdListBox,
       breadcrumbs: true
     },
     {
@@ -66,7 +77,7 @@ const dashboard = {
       title: 'Quản lý Người dùng',
       type: 'item',
       url: '/admin/user',
-      icon: icons.DashboardOutlined,
+      icon: icons.FaUserCheck,
       breadcrumbs: true
     }
   ]

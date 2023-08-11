@@ -3,7 +3,8 @@ import { string, number } from 'prop-types';
 import DialogContent from '@mui/material/DialogContent';
 import WrapperTable from 'components/table/WrapperTable';
 
-import { Dialog, DialogTitle, Slide, Box } from '@mui/material';
+import { Dialog, DialogTitle, Slide, Box, Typography } from '@mui/material';
+import { convertToVND } from 'utils/convertPrice';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -29,6 +30,7 @@ const DetailOrderCreateDialog = (props) => {
     { label: 'cartQuantity', type: number },
     { label: 'price_discount', type: number }
   ];
+  const totalPrice = props?.data?.cart?.reduce((total, ct) => total + ct.price_discount * ct.cartQuantity, 0);
   return (
     <>
       <Dialog open={props.open} TransitionComponent={Transition} keepMounted onClose={handleCloseDialog} maxWidth="xl">
@@ -37,6 +39,9 @@ const DetailOrderCreateDialog = (props) => {
           <Box sx={{ width: '800px' }}>
             <WrapperTable isPagination displayTableTitle={headRows} displayRowData={mapKey} data={props?.data?.cart} />
           </Box>
+          <Typography sx={{ textAlign: 'right', color: '#ed1c24', fontWeight: 600 }}>
+            Tổng giá tiền : {convertToVND(totalPrice)}{' '}
+          </Typography>
         </DialogContent>
       </Dialog>
     </>

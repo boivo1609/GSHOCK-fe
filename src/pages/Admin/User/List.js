@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { string, number } from 'prop-types';
+import { string } from 'prop-types';
 import MainCard from 'components/MainCard';
 import * as actions from './api/UserActions';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
@@ -12,7 +12,7 @@ const UserList = () => {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
   const { currentState } = useSelector((state) => ({ currentState: state.users }), shallowEqual);
-  console.log(currentState);
+
   const { data, user, userId, listLoading, totalElements } = currentState;
 
   const dispatch = useDispatch();
@@ -34,15 +34,12 @@ const UserList = () => {
     { id: 'stt', label: 'STT' },
     { id: 'name', label: 'Tên người dùng' },
     { id: 'email', label: 'Email' },
-    { id: 'phone', label: 'Số điện thoại' },
     { id: 'createdAt', label: 'Ngày tạo' },
-    { id: 'status', label: 'Trạng thái' },
-    { id: 'action', label: 'Hành động' }
+    { id: 'status', label: 'Trạng thái' }
   ];
   const mapKey = [
     { label: 'name', type: string },
     { label: 'email', type: string },
-    { label: 'phone', type: number },
     { label: 'createdAt', type: string },
     { label: 'status', type: string }
   ];
@@ -61,7 +58,7 @@ const UserList = () => {
             <LinearProgress color="secondary" />
           </Fade>
           <WrapperTable
-            component={''}
+            component={'active'}
             displayTableTitle={headRows}
             displayRowData={mapKey}
             data={data}

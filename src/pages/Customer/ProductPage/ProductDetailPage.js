@@ -24,13 +24,15 @@ const ProductDetailPage = () => {
   const dispatch = useDispatch();
   const { productState, cartState } = useSelector((state) => ({ productState: state.products, cartState: state.carts }), shallowEqual);
   const { productDetail, productCustomer: listProduct } = productState;
+  console.log('DETAIL', productState);
   console.log(listProduct);
-  const { cart, cartQuantity } = cartState;
-
+  const { cart } = cartState;
+  console.log('cartState', cartState);
   const [quantity, setQuantity] = useState(1);
-  const [idSelectedColor, setIdSelectedColor] = useState(null);
-  const [colorChoosen, setColorChoosen] = useState(null);
+  // const [idSelectedColor, setIdSelectedColor] = useState(null);
+  // const [colorChoosen, setColorChoosen] = useState(null);
   const { id } = useParams();
+  const soluong_daban = productDetail?.so_luong - productDetail?.soluong_conlai;
   const navigate = useNavigate();
   useEffect(() => {
     if (id) {
@@ -47,26 +49,40 @@ const ProductDetailPage = () => {
     }
   };
   const handleIncrease = () => {
-    setQuantity(quantity + 1);
+    if (quantity >= productDetail?.soluong_conlai) {
+      enqueueSnackbar('Số lượng đặt hàng phải nhỏ hơn số lượng sản phẩm trong kho', {
+        variant: 'warning'
+      });
+    } else {
+      setQuantity(quantity + 1);
+    }
   };
-  const handleChoosenColor = (item) => {
-    setColorChoosen(item);
-    setIdSelectedColor(item._id);
-  };
+  // const handleChoosenColor = (item) => {
+  //   setColorChoosen(item);
+  //   setIdSelectedColor(item._id);
+  // };
   const handleAddToCart = (values) => {
     if (currentState.authToken == undefined) {
       navigate('/login');
     } else {
-      if (colorChoosen === null) {
-        enqueueSnackbar('Vui lòng chọn màu sắc khi thêm sản phẩm vào giỏ hàng', {
-          variant: 'error'
+      const obj = cartState.cart.find((item) => item._id === productDetail._id);
+      const quantity_current = obj?.cartQuantity;
+      console.log('quantity_cur', quantity_current);
+      if (quantity_current + quantity > productDetail?.soluong_conlai) {
+        enqueueSnackbar('Số lượng đặt hàng phải nhỏ hơn số lượng sản phẩm trong kho', {
+          variant: 'warning'
         });
+        // } else if (colorChoosen === null) {
+        //   enqueueSnackbar('Vui lòng chọn màu sắc khi thêm sản phẩm vào giỏ hàng', {
+        //     variant: 'error'
+        //   });
       } else {
         const transformDataCart = {
           ...values,
-          colors: colorChoosen,
+          // colors: colorChoosen,
           cartQuantity: quantity
         };
+
         dispatch(cartActions.addToCart(transformDataCart));
         enqueueSnackbar(`${values.name} đã được thêm vào giỏ hàng`, {
           variant: 'success'
@@ -74,9 +90,10 @@ const ProductDetailPage = () => {
       }
     }
   };
+
   useEffect(() => {
     dispatch(cartActions.getTotal());
-  }, [dispatch, cart, cartQuantity]);
+  }, [dispatch, cart]);
 
   return (
     <CustomerPage>
@@ -155,14 +172,13 @@ const ProductDetailPage = () => {
                 <p className="mb-4 font-bold text-sm mt-0 text-[#7a9c59]"> Sản phẩm hết hàng</p>
               )}
               <div className="flex gap-x-2 items-center justify-center">
-                <p className=" ">Chọn màu sắc : </p>
+                <p className=" font-bold text-sm  text-[#7a9c59]"> Màu sắc : </p>
+                <p className=" font-bold text-sm  text-[#7a9c59]"> {soluong_daban} </p>
                 {productDetail?.colors.map((iteml) => (
                   <div
                     key={iteml._id}
-                    className={`px-3 py-2 cursor-pointer  ${
-                      idSelectedColor === iteml._id ? 'border-5 border-red-500 border-solid' : 'border border-gray-900 border-solid'
-                    } rounded-lg`}
-                    onClick={() => handleChoosenColor(iteml)}
+                    className="px-3 py-2 border border-gray-900 border-solid rounded-lg"
+                    // onClick={() => handleChoosenColor(iteml)}
                   >
                     <p className=" font-bold text-sm  text-[#7a9c59]">{iteml.name}</p>
                   </div>
@@ -170,34 +186,37 @@ const ProductDetailPage = () => {
               </div>
 
               <div className="mb-5 mt-4 cart">
-                <div className="h-auto flex items-center justify-center">
-                  <div className="mr-2 mb-4">
-                    <div className="m-0 inline-flex">
-                      <input
-                        onClick={handleDecrease}
-                        type="button"
-                        value="-"
-                        className="border-r-0 px-2 m-0 inline-block bg-transparent overflow-hidden relative text-[#666] border font-normal button hover:bg-slate-100"
-                      />
-                      <input
-                        value={quantity}
-                        inputMode="numeric"
-                        className="border h-[2.507em]  border-x-0 max-w-[2em] text-center text-sm bg-transparent px-0 m-0 inline-block"
-                      />
-                      <input
-                        onClick={handleIncrease}
-                        type="button"
-                        value="+"
-                        className="border-l-0 px-2 m-0 inline-block bg-transparent overflow-hidden relative text-[#666] border font-normal button hover:bg-slate-100"
-                      />
+                {productDetail?.soluong_conlai > 0 && (
+                  <div className="h-auto flex items-center justify-center">
+                    <div className="mr-2 mb-4">
+                      <div className="m-0 inline-flex">
+                        <input
+                          onClick={handleDecrease}
+                          type="button"
+                          value="-"
+                          className="border-r-0 px-2 m-0 inline-block bg-transparent overflow-hidden relative text-[#666] border font-normal button hover:bg-slate-100"
+                        />
+                        <input
+                          value={quantity}
+                          inputMode="numeric"
+                          className="border h-[2.507em]  border-x-0 max-w-[2em] text-center text-sm bg-transparent px-0 m-0 inline-block"
+                        />
+
+                        <input
+                          onClick={handleIncrease}
+                          type="button"
+                          value="+"
+                          className="border-l-0 px-2 m-0 inline-block bg-transparent overflow-hidden relative text-[#666] border font-normal button hover:bg-slate-100"
+                        />
+                      </div>
+                    </div>
+                    <div className="mr-1 mb-4">
+                      <Button variant="contained" color="primary" onClick={() => handleAddToCart(productDetail)}>
+                        Thêm vào giỏ
+                      </Button>
                     </div>
                   </div>
-                  <div className="mr-1 mb-4">
-                    <Button variant="contained" color="primary" onClick={() => handleAddToCart(productDetail)}>
-                      Thêm vào giỏ
-                    </Button>
-                  </div>
-                </div>
+                )}
               </div>
               <hr className="mx-0 my-4 border-0 opacity-10 border-t-2 border-t-current" />
               <p className="text-left mt-0 mb-5 ">

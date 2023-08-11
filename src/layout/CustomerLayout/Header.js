@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { FaShoppingCart } from 'react-icons/fa';
-import { AiFillSetting } from 'react-icons/ai';
+import { GrHistory } from 'react-icons/gr';
+
 import { MdOutlineAccountCircle } from 'react-icons/md';
 import { RiLogoutBoxRLine } from 'react-icons/ri';
 import { shallowEqual, useSelector } from 'react-redux';
@@ -9,37 +10,45 @@ import { convertToVND } from 'utils/convertPrice';
 import Search from 'components/search/Search';
 import { useDispatch } from 'react-redux';
 import { actions } from '../../pages/authentication/_redux/authRedux';
+import * as userAction from '../../../src/pages/Admin/User/api/UserActions';
 import { useNavigate } from 'react-router-dom';
 import * as cartActions from '../../pages/Customer/Cart/_redux/cartAction';
 import { useSnackbar } from 'notistack';
-
 import { Box, Tooltip, IconButton, Avatar, Menu, MenuItem, Typography, Popover, Badge, Button } from '@mui/material';
 const Header = () => {
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
-  const { currentState, cartsState } = useSelector((state) => ({ currentState: state.auth, cartsState: state.carts }), shallowEqual);
+  const { currentState, cartsState, userState } = useSelector(
+    (state) => ({ currentState: state.auth, cartsState: state.carts, userState: state.users }),
+    shallowEqual
+  );
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const { cart, cartTotalAmount } = cartsState;
+  console.log(cart);
   const handleDeleToCart = (item) => {
     dispatch(cartActions.deleteToCart(item));
     enqueueSnackbar(`${item.name} đã được xóa khỏi giỏ hàng`, {
       variant: 'success'
     });
   };
-  const handleDeleAllCart = () => {
-    dispatch(cartActions.clearCart());
-    enqueueSnackbar(`Tất cả sản phẩm đã được xóa khỏi giỏ hàng`, {
-      variant: 'success'
-    });
-  };
+  useEffect(() => {
+    dispatch(userAction.getUserById({ params: { id: currentState?.authToken?.user?._id } }));
+  }, [currentState?.authToken?.user?._id, dispatch]);
   const [quantity, setQuantity] = React.useState(1);
 
   const handleIncrease = (item) => {
-    setQuantity(item.cartQuantity);
-    dispatch(cartActions.increaseCart(item));
+    if (item.cartQuantity >= item.soluong_conlai) {
+      enqueueSnackbar('Số lượng đặt hàng phải nhỏ hơn số lượng sản phẩm trong kho', {
+        variant: 'warning'
+      });
+    } else {
+      setQuantity(item.cartQuantity);
+      dispatch(cartActions.increaseCart(item));
+    }
   };
+
   const handleDecrement = (item) => {
     setQuantity(item.cartQuantity);
     dispatch(cartActions.decreaseCart(item));
@@ -50,12 +59,20 @@ const Header = () => {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+  const handlePPayment = () => {
+    navigate('/payment');
+  };
   const handleLogout = async () => {
     dispatch(cartActions.clearCart());
     dispatch(actions.logout());
     navigate('/logout');
   };
-
+  const handleHistory = async () => {
+    navigate('/orderhistory');
+  };
+  const handleUser = async () => {
+    navigate('/update-user');
+  };
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -69,7 +86,7 @@ const Header = () => {
   const open = Boolean(anchorEl);
   const id = open ? 'simple-popover' : undefined;
   return (
-    <header className=" w-full z-10 bg-white  ">
+    <header className=" w-full  bg-white  sticky top-0 shadow-lg z-[100]">
       <div className="header ">
         <div className="flex items-center justify-between px-6 py-4 w-full mx-auto">
           <div className=" ml-0 mr-7 m-0 leading-none max-h-full">
@@ -90,7 +107,6 @@ const Header = () => {
                   Sản phẩm
                 </NavLink>
               </li>
-
               <li className=" headerr-divider-second"></li>
               {!currentState?.authToken?.token && (
                 <li className="menu-item">
@@ -100,8 +116,8 @@ const Header = () => {
                 </li>
               )}
 
-              <li className="headerr-divider"></li>
-              <li className="cart mr-0 menu-item">
+              <li className="headerr-divider "></li>
+              <li className="cart  menu-item mr-6">
                 <div className="border border-red-800 border-style rounded-full border-cart">
                   <button
                     aria-describedby={id}
@@ -212,13 +228,13 @@ const Header = () => {
                                     to="/cart"
                                     className="text-[#ed1c24] border-2 text-xs border-solid  border-current bg-transparent leading-[2.19em]  button border-cart uppercase"
                                   >
-                                    Đi đến giỏ hàng{' '}
+                                    Chi tiết giỏ hàng{' '}
                                   </NavLink>
                                   <Button
                                     className="text-[#ed1c24] border-2 text-xs border-solid  border-current bg-transparent leading-[2.19em] button border-cart uppercase"
-                                    onClick={handleDeleAllCart}
+                                    onClick={handlePPayment}
                                   >
-                                    Xóa tất cả sản phẩm
+                                    Tiến hành thanh toán
                                   </Button>
                                 </div>
                               </td>
@@ -237,14 +253,11 @@ const Header = () => {
               </li>
               {currentState?.authToken?.token && (
                 <li className="mr-2 ml-4 flex items-center justify-between">
-                  <span className="text-base text-black font-semibold mr-4">{currentState?.authToken?.user?.name}</span>
+                  <span className="text-base text-black font-semibold mr-4">{userState?.user?.name}</span>
                   <Box sx={{ flexGrow: 0 }}>
-                    <Tooltip title="Open settings">
+                    <Tooltip title="Cài đặt">
                       <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                        <Avatar
-                          alt="Travis Howard"
-                          src="https://cdn.dribbble.com/users/468006/screenshots/1368209/03.jpg?compress=1&resize=800x600&vertical=top"
-                        />
+                        <Avatar alt="Travis Howard" src={userState?.user?.image} />
                       </IconButton>
                     </Tooltip>
                     <Menu
@@ -263,27 +276,42 @@ const Header = () => {
                       open={Boolean(anchorElUser)}
                       onClose={handleCloseUserMenu}
                     >
-                      <MenuItem onClick={handleCloseUserMenu}>
+                      <MenuItem
+                        onClick={() => {
+                          handleUser();
+                          handleCloseUserMenu();
+                        }}
+                      >
                         <Typography textAlign="center">
                           <MdOutlineAccountCircle className="h-5 w-5"></MdOutlineAccountCircle>
                         </Typography>
                         <Typography textAlign="center" className="ml-2 text-base">
-                          Tài khoản
+                          Cài đặt tài khoản
                         </Typography>
                       </MenuItem>
-                      <MenuItem onClick={handleCloseUserMenu}>
+                      <MenuItem
+                        onClick={() => {
+                          handleHistory();
+                          handleCloseUserMenu();
+                        }}
+                      >
                         <Typography textAlign="center">
-                          <AiFillSetting className="h-5 w-5"></AiFillSetting>
+                          <GrHistory className="h-5 w-5"></GrHistory>
                         </Typography>
                         <Typography textAlign="center" className="ml-2 text-base">
-                          Cài đặt
+                          Lịch sử đặt hàng
                         </Typography>
                       </MenuItem>
-                      <MenuItem onClick={handleCloseUserMenu}>
+                      <MenuItem
+                        onClick={() => {
+                          handleLogout();
+                          handleCloseUserMenu();
+                        }}
+                      >
                         <Typography textAlign="center">
                           <RiLogoutBoxRLine className="h-5 w-5"></RiLogoutBoxRLine>
                         </Typography>
-                        <Typography textAlign="center" className="ml-2 text-base" onClick={handleLogout}>
+                        <Typography textAlign="center" className="ml-2 text-base">
                           Đăng xuất
                         </Typography>
                       </MenuItem>

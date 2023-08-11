@@ -45,6 +45,16 @@ export const UserSlice = createSlice({
       state.size = size;
       state.totalElements = totalElements;
       state.totalPages = totalPages;
+    },
+    UserUpdate: (state, action) => {
+      state.error = null;
+      state.userForEdit = action.payload;
+      state.actionsLoading = false;
+    },
+    UserById: (state, action) => {
+      state.error = null;
+      state.user = action.payload;
+      state.actionsLoading = false;
     }
   }
 });

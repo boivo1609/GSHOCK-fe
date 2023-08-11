@@ -18,7 +18,8 @@ import RHFRadioGroup from 'components/form/RHFRadioGroup';
 
 const CASH_OPTION = [
   { label: 'Thanh toán bằng tiền mặt khi nhận hàng', value: 'cash' },
-  { label: 'Thanh toán bằng ZaloPay', value: 'zalopay' }
+  { label: 'Thanh toán bằng Zalopay', value: 'zalo' }
+  // { label: 'Thanh toán bằng ZaloPay', value: 'zalopay' }
 ];
 function generateRandomOrderId(length) {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -33,12 +34,13 @@ const PaymentPage = () => {
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
-  const { cartState, authState, orderState } = useSelector(
-    (state) => ({ cartState: state.carts, authState: state.auth, orderState: state.orders }),
+  const { cartState, authState, orderState, userState } = useSelector(
+    (state) => ({ cartState: state.carts, authState: state.auth, orderState: state.orders, userState: state.users }),
     shallowEqual
   );
+  console.log(authState);
   const { orderSuccess } = orderState;
-
+  const { user } = userState;
   const { cart: listCart, cartTotalAmount, cartTotalQuantity } = cartState;
   const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
   const orderSchema = Yup.object().shape({
@@ -53,10 +55,11 @@ const PaymentPage = () => {
     dispatch(cartActions.getTotal());
   }, [dispatch, listCart]);
   const defaultValues = {
-    firstName: '',
-    lastName: '',
-    address: '',
-    phone: '',
+    name: authState?.authToken?.user?.name || '',
+    firstName: authState?.authToken?.user?.firstName || '',
+    lastName: authState?.authToken?.user?.lastName || '',
+    address: authState?.authToken?.user?.address || '',
+    phone: authState?.authToken?.user?.phone || '',
     email: authState?.authToken?.user?.email || '',
     orderStatus: 'cash'
   };
@@ -64,10 +67,17 @@ const PaymentPage = () => {
     resolver: yupResolver(orderSchema),
     defaultValues
   });
-
+  useEffect(() => {
+    setValue('name', user?.name);
+    setValue('firstName', user?.firstName);
+    setValue('lastName', user?.lastName);
+    setValue('address', user?.address);
+    setValue('phone', user?.phone);
+    setValue('email', user?.email);
+  }, [user]);
   const {
     handleSubmit,
-
+    setValue,
     formState: { isSubmitting }
   } = methods;
   const onSubmit = (values) => {
@@ -80,7 +90,7 @@ const PaymentPage = () => {
         cart: listCart,
         total_product: cartTotalQuantity,
         total_price: cartTotalAmount,
-        user: authState?.authToken?.user?.id
+        user: authState?.authToken?.user?._id
       };
       dispatch(orderActions.createOrder(transformData));
     } catch (error) {
@@ -147,7 +157,7 @@ const PaymentPage = () => {
                         </Stack>
                         <Stack direction="column" mb={4}>
                           <Typography mb={1} fontWeight="bold">
-                            Địa chỉ{' '}
+                            Địa chỉ nhận hàng
                           </Typography>
                           <RHFTextField name="address" />
                         </Stack>
