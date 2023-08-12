@@ -32,7 +32,7 @@ const ProductDetailPage = () => {
   // const [idSelectedColor, setIdSelectedColor] = useState(null);
   // const [colorChoosen, setColorChoosen] = useState(null);
   const { id } = useParams();
-  const soluong_daban = productDetail?.so_luong - productDetail?.soluong_conlai;
+
   const navigate = useNavigate();
   useEffect(() => {
     if (id) {
@@ -169,11 +169,11 @@ const ProductDetailPage = () => {
               {productDetail?.soluong_conlai > 0 ? (
                 <p className="mb-4 font-bold text-sm mt-0 text-[#7a9c59]">Còn {productDetail?.soluong_conlai} sản phẩm </p>
               ) : (
-                <p className="mb-4 font-bold text-sm mt-0 text-[#7a9c59]"> Sản phẩm hết hàng</p>
+                <p className="mb-4 font-bold text-sm mt-0 text-[#252625]"> Sản phẩm hết hàng</p>
               )}
               <div className="flex gap-x-2 items-center justify-center">
                 <p className=" font-bold text-sm  text-[#7a9c59]"> Màu sắc : </p>
-                <p className=" font-bold text-sm  text-[#7a9c59]"> {soluong_daban} </p>
+
                 {productDetail?.colors.map((iteml) => (
                   <div
                     key={iteml._id}
